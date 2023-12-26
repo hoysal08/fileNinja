@@ -21,6 +21,7 @@ const options = program.opts();
 
 
 function getFileByteSize(path: string): FileSizeInfo {
+    checkForPath(path);
     try {
         if (fs.existsSync(path)) {
             // Get the file size in bytes
@@ -45,6 +46,7 @@ function getFileByteSize(path: string): FileSizeInfo {
 }
 
 function countLinesInFile(path: string): LineCountResult {
+    checkForPath(path);
     try {
         if (fs.existsSync(path)) {
             const fileContent = fs.readFileSync(path, 'utf8');
@@ -69,6 +71,7 @@ function countLinesInFile(path: string): LineCountResult {
 }
 
 function countWordsInFile(path: string): WordCountResult {
+    checkForPath(path);
     try {
         if (fs.existsSync(path)) {
             const fileContent = fs.readFileSync(path, 'utf8');
@@ -93,6 +96,7 @@ function countWordsInFile(path: string): WordCountResult {
 }
 
 function countCharactersInFile(path: string): CharacterCountResult {
+    checkForPath(path);
     try {
         if (fs.existsSync(path)) {
             const fileContent = fs.readFileSync(path, 'utf8');
@@ -162,27 +166,34 @@ if (options.countCharacters) {
     }
 }
 
+function checkForPath(path: string) {
+    if (!path) {
+        throw new Error("You must provide a filename using <path> argument.");
+    }
+}
+
 if (!process.argv.slice(2).some(arg => arg.startsWith('-'))) {
     const path = process.argv[2]; // Assuming the first non-option argument is the file path
+    checkForPath(path);
     const byteResult = getFileByteSize(path);
     const lineResult = countLinesInFile(path);
     const wordResult = countWordsInFile(path);
-  
+
     if (byteResult.success) {
-      console.log(`File size: ${byteResult.sizeInBytes} bytes`);
+        console.log(`File size: ${byteResult.sizeInBytes} bytes`);
     } else {
-      console.log(`Error: ${byteResult.errorMessage}`);
+        console.log(`Error: ${byteResult.errorMessage}`);
     }
-  
+
     if (lineResult.success) {
-      console.log(`Number of lines in file: ${lineResult.lineCount}`);
+        console.log(`Number of lines in file: ${lineResult.lineCount}`);
     } else {
-      console.log(`Error: ${lineResult.errorMessage}`);
+        console.log(`Error: ${lineResult.errorMessage}`);
     }
-  
+
     if (wordResult.success) {
-      console.log(`Number of words in file: ${wordResult.wordCount}`);
+        console.log(`Number of words in file: ${wordResult.wordCount}`);
     } else {
-      console.log(`Error: ${wordResult.errorMessage}`);
+        console.log(`Error: ${wordResult.errorMessage}`);
     }
-  }
+}
