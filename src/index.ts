@@ -1,9 +1,9 @@
-import { CharacterCountResult, FileSizeInfo, LineCountResult, WordCountResult } from "./types";
+#! /usr/bin/env node
+import { checkForPath, countCharactersInFile, countLinesInFile, countWordsInFile, getFileByteSize } from "./helper";
 
 const figlet = require("figlet");
 const { Command } = require("commander");
 const program = new Command();
-const fs = require("fs");
 
 console.log(figlet.textSync("FileNinja"));
 
@@ -19,116 +19,10 @@ program
 
 const options = program.opts();
 
-
-function getFileByteSize(path: string): FileSizeInfo {
-    checkForPath(path);
-    try {
-        if (fs.existsSync(path)) {
-            // Get the file size in bytes
-            const stats = fs.statSync(path);
-            const fileSizeInBytes = stats.size;
-            return {
-                success: true,
-                sizeInBytes: fileSizeInBytes,
-            };
-        } else {
-            return {
-                success: false,
-                errorMessage: `File not found at '${path}'`,
-            };
-        }
-    } catch (error) {
-        return {
-            success: false,
-            errorMessage: `Error checking file size:${(error as Error).message}`,
-        };
-    }
-}
-
-function countLinesInFile(path: string): LineCountResult {
-    checkForPath(path);
-    try {
-        if (fs.existsSync(path)) {
-            const fileContent = fs.readFileSync(path, 'utf8');
-            const lines = fileContent.split('\n');
-            const lineCount = lines.length;
-            return {
-                success: true,
-                lineCount: lineCount,
-            };
-        } else {
-            return {
-                success: false,
-                errorMessage: `File not found at '${path}'`,
-            };
-        }
-    } catch (error) {
-        return {
-            success: false,
-            errorMessage: `Error counting lines in file: ${(error as Error).message}`,
-        };
-    }
-}
-
-function countWordsInFile(path: string): WordCountResult {
-    checkForPath(path);
-    try {
-        if (fs.existsSync(path)) {
-            const fileContent = fs.readFileSync(path, 'utf8');
-            const words = fileContent.split(/\s+/).filter((word: string) => word.length > 0);
-            const wordCount = words.length;
-            return {
-                success: true,
-                wordCount: wordCount,
-            };
-        } else {
-            return {
-                success: false,
-                errorMessage: `File not found at '${path}'`,
-            };
-        }
-    } catch (error) {
-        return {
-            success: false,
-            errorMessage: `Error counting words in file: ${(error as Error).message}`,
-        };
-    }
-}
-
-function countCharactersInFile(path: string): CharacterCountResult {
-    checkForPath(path);
-    try {
-        if (fs.existsSync(path)) {
-            const fileContent = fs.readFileSync(path, 'utf8');
-            const containsMultibyteCharacters = /[^\x00-\x7F]/.test(fileContent); // Check for multibyte characters
-            if (containsMultibyteCharacters) {
-                // If multibyte characters are present, fall back to byte count (like -c)
-                const stats = fs.statSync(path);
-                const characterCount = stats.size;
-                return {
-                    success: true,
-                    characterCount: characterCount,
-                };
-            } else {
-                const characterCount = fileContent.length;
-                return {
-                    success: true,
-                    characterCount: characterCount,
-                };
-            }
-        } else {
-            return {
-                success: false,
-                errorMessage: `File not found at '${path}'`,
-            };
-        }
-    } catch (error) {
-        return {
-            success: false,
-            errorMessage: `Error counting characters in file: ${(error as Error).message}`,
-        };
-    }
-}
+if (process.argv.slice(2).length==0) {
+    program.outputHelp();
+    process.exit(1);
+  }
 
 if (options.checkByte) {
     const result = getFileByteSize(options.checkByte);
@@ -166,11 +60,6 @@ if (options.countCharacters) {
     }
 }
 
-function checkForPath(path: string) {
-    if (!path) {
-        throw new Error("You must provide a filename using <path> argument.");
-    }
-}
 
 if (!process.argv.slice(2).some(arg => arg.startsWith('-'))) {
     const path = process.argv[2]; // Assuming the first non-option argument is the file path
