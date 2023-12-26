@@ -1,14 +1,22 @@
 {
-  "name": "fileninja",
+  "name": "@hoysal/fileninja",
   "version": "1.0.0",
   "description": "A CLI tool to help with your file statistics and manipulation",
   "scripts": {
     "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [
+    "file",
+    "cli",
+    "statistics",
+    "manipulation"
+  ],
   "author": "Sooraj Hoysal",
   "license": "ISC",
-  "main": "dist/index.js", 
+  "repository": "https://github.com/hoysal08/fileNinja",
+  "homepage": "https://github.com/hoysal08/fileNinja#readme",
+  "main": "dist/index.js",
   "bin": {
     "fileninja": "./dist/index.js"
   },
